@@ -1,0 +1,212 @@
+<form nz-form nzLayout="vertical" [formGroup]="invoiceForm">
+  <div nz-row [nzGutter]="24">
+    <div nz-col [nzXs]="24" [nzSm]="4" [nzMd]="4">
+      <nz-form-item>
+        <nz-form-control>
+          <nz-date-picker
+            formControlName="fechaInicial"
+            nzFormat="dd/MM/yyyy"
+            nzPlaceHolder="Fecha Inicial"
+            [nzDisabledDate]="disabledInitialDate"
+          ></nz-date-picker>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div nz-col [nzXs]="24" [nzSm]="4" [nzMd]="4">
+      <nz-form-item>
+        <nz-form-control>
+          <nz-date-picker
+            formControlName="fechaFinal"
+            nzFormat="dd/MM/yyyy"
+            nzPlaceHolder="Fecha Final"
+            [nzDisabledDate]="disabledFinalDate"
+          ></nz-date-picker>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div nz-col [nzXs]="24" [nzSm]="6" [nzMd]="5">
+      <nz-form-item>
+        <nz-form-control>
+          <input
+            nz-input
+            formControlName="numeroGuia"
+            placeholder="Numeros de Guias"
+            maxlength="200"
+            (input)="onNumeberGuiaInput($event)"
+          />
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div nz-col [nzXs]="24" [nzSm]="6" [nzMd]="5">
+      <nz-form-item>
+        <nz-form-control>
+          <input
+            nz-input
+            formControlName="numeroDocumento"
+            placeholder="Numeros de Ids"
+            maxlength="200"
+            (input)="onNumberDocumentInput($event)"
+          />
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="2" class="alinear-derecha">
+      <nz-form-item nz-no-label>
+        <nz-form-control>
+          <button
+            nz-button
+            nzType="default"
+            (click)="submitForm('limpiar')"
+            [disabled]="isFormInvalid"
+          >
+            <nz-icon nzType="clear" />
+            <span>Limpiar</span>
+          </button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="4" class="alinear-derecha">
+      <nz-form-item nz-no-label>
+        <nz-form-control>
+          <button
+            nz-button
+            nzType="primary"
+            (click)="submitForm('buscar')"
+            [disabled]="isFormInvalid"
+          >
+            <nz-icon nzType="search" />
+            <span>Buscar</span>
+          </button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+</form>
+
+<span
+  >Mostrando <b>{{ headerTable.data.length }}</b> de
+  <b>{{ listOfData.length }}</b> registros
+</span>
+
+<div class="table-container">
+  <nz-table
+    #headerTable
+    [nzData]="dataFiltered"
+    [nzBordered]="true"
+    [nzSimple]="true"
+    [nzLoading]="false"
+    nzPaginationType="default"
+    nzPaginationPosition="bottom"
+    [nzShowSizeChanger]="true"
+    [nzFrontPagination]="true"
+    [nzShowPagination]="true"
+    nzSize="small"
+    [nzTitle]="buscarTemplate"
+    [nzPageSize]="pagesize"
+  >
+    <thead>
+      <tr>
+        <th
+          [nzChecked]="checked"
+          nzLabel="Select all"
+          (nzCheckedChange)="onAllChecked($event)"
+        ></th>
+        <th
+          [nzSortOrder]="columns.numeroComprobante.sortOrder"
+          [nzSortFn]="columns.numeroComprobante.sortFn"
+          [nzSortDirections]="columns.numeroComprobante.sortDirections"
+        >
+          {{ columns.numeroComprobante.title }}
+        </th>
+        <th
+          [nzSortOrder]="columns.numeroGuia.sortOrder"
+          [nzSortFn]="columns.numeroGuia.sortFn"
+          [nzSortDirections]="columns.numeroGuia.sortDirections"
+        >
+          {{ columns.numeroGuia.title }}
+        </th>
+        <th
+          [nzSortOrder]="columns.identificacionCliente.sortOrder"
+          [nzSortFn]="columns.identificacionCliente.sortFn"
+          [nzSortDirections]="columns.identificacionCliente.sortDirections"
+        >
+          {{ columns.identificacionCliente.title }}
+        </th>
+        <th
+          [nzSortOrder]="columns.nombreCliente.sortOrder"
+          [nzSortFn]="columns.nombreCliente.sortFn"
+          [nzSortDirections]="columns.nombreCliente.sortDirections"
+        >
+          {{ columns.nombreCliente.title }}
+        </th>
+        <th
+          [nzSortOrder]="columns.estado.sortOrder"
+          [nzSortFn]="columns.estado.sortFn"
+          [nzSortDirections]="columns.estado.sortDirections"
+        >
+          {{ columns.estado.title }}
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <ng-container *ngIf="headerTable.data.length > 0">
+        <tr *ngFor="let data of headerTable.data">
+          <td
+            [nzChecked]="setOfCheckedId.has(data.id)"
+            [nzDisabled]="data.disabled"
+            [nzLabel]="data.name"
+            (nzCheckedChange)="onItemChecked(data.id, $event)"
+          ></td>
+          <td>{{ data.numeroComprobante }}</td>
+          <td>{{ data.numeroGuia }}</td>
+          <td>{{ data.identificacionCliente }}</td>
+          <td>{{ data.nombreCliente }}</td>
+          <td>
+            <nz-tag
+              [nzColor]="data.estado === 'Finalizado' ? 'green' : 'orange'"
+            >
+              {{ data.estado }}
+            </nz-tag>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </nz-table>
+</div>
+
+<ng-template #buscarTemplate>
+  <div class="alineacion">
+    <div>
+      <button
+        nz-button
+        nzType="primary"
+        [disabled]="setOfCheckedId.size === 0"
+        (click)="generateInvoices()"
+      >
+        <nz-icon nzType="snippets" class="icon-left"></nz-icon>
+        <span> Generar Facturas</span>
+      </button>
+      <span>{{ setOfCheckedId.size }} Seleccionadas</span>
+    </div>
+
+    <nz-input-group [nzSuffix]="suffixIcon">
+      <input
+        type="text"
+        nz-input
+        placeholder="Buscar..."
+        maxlength="100"
+        [(ngModel)]="searchGlobal"
+        (ngModelChange)="filterTable()"
+      />
+    </nz-input-group>
+    <ng-template #suffixIcon>
+      <i nz-icon nzType="search"></i>
+    </ng-template>
+  </div>
+</ng-template>
